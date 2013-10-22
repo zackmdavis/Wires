@@ -2,26 +2,13 @@ import http.server
 
 from collections import OrderedDict
 
-# from sys import path
-# path.append('../demo/controllers')
-#
-# from controllers import PostsController
+from sys import path
+path.append('../')
 
-# from ..demo.controllers import PostsController
+from demo.controllers.posts_controller import *
 
-# Scaffolding hack because apparently I don't understand how relative imports
-# work
-class PostsController:
-
-    def index(parameters):
-        return '''<html><head><title>Testing Title</title></head>
-        <body><h2>Posts</h2><p>I'm in the posts controller!</p></body>
-        </html>'''
-
-    def show(parameters):
-        return '''<html><head><title>Testing Title</title></head>
-        <body><h2>Posts</h2><p>You've requested post #{0}</p></body>
-        </html>'''.format(parameters["id"])
+# don't know how to get this style to work
+# from ..demo.controllers.posts_controller import *
 
 class RequestHandler(http.server.BaseHTTPRequestHandler):
 
@@ -31,6 +18,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     delete = OrderedDict()
 
     def do_GET(self):
+        controller = None
         for route in self.get.keys():
             match = route.match(self.path)
             if match:
@@ -45,6 +33,11 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(bytes(page, 'UTF-8'))
         else:
             self.send_response(404)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            page = "<html><head></head><body><h3>not found</h3></body></html>"
+            self.wfile.write(bytes(page, 'UTF-8'))
+
 
     def do_POST(self):
         pass
