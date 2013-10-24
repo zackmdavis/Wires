@@ -1,7 +1,6 @@
 from sys import path
-path.append('../../wires')
-
-from template_engine import TemplateEngine
+path.append('../..')
+from wires import *
 
 class PostsController:
 

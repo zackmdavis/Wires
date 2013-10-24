@@ -1,20 +1,15 @@
 from sys import path
+path.append('..')
+from wires import *
 
-path.append('../wires')
-
-from server import run_server
-
-from request_handler import RequestHandler
-
-# don't know how to get this style to work
-# from ..wires.server import run_server
-# from ..wires.request_handler import RequestHandler
+from controllers.posts_controller import *
 
 import re
-RequestHandler.get[re.compile("^/posts$")] = ("Posts", "index")
-RequestHandler.get[re.compile("^/posts/(?P<id>\d+)$")] = ("Posts", "show")
 
-from controllers import *
+from pdb import set_trace as debug
+
+RequestHandler.get[re.compile("^/posts$")] = PostsController.index
+RequestHandler.get[re.compile("^/posts/(?P<id>\d+)$")] = PostsController.show
 
 if __name__ == '__main__':
     run_server('localhost', 8080, RequestHandler)
