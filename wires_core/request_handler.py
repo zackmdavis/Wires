@@ -9,8 +9,6 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     put = OrderedDict()
     delete = OrderedDict()
 
-    controllers = {}
-
     def do_GET(self):
         action = None
         for route in self.get.keys():
@@ -32,6 +30,6 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             page = "<html><head></head><body><h3>not found</h3></body></html>"
             self.wfile.write(bytes(page, 'UTF-8'))
 
-
     def do_POST(self):
-        pass
+        page = "<html><head></head><body><h3>not yet implemented</h3></body></html>"
+        self.wfile.write(bytes(page, 'UTF-8'))

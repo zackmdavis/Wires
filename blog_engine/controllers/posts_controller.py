@@ -14,3 +14,11 @@ class PostsController:
         attributes = {key:str(post.attributes[key]) for key in post.attributes}
         definitions = dict(list(parameters.items()) + list(attributes.items()))
         return TemplateEngine(template, definitions).render()
+
+    def new(parameters):
+        template = open('./views/new.html').read()
+        definitions = {}
+        return TemplateEngine(template, definitions).render()
+
+    def create(parameters):
+        pass
