@@ -11,8 +11,6 @@ class PostsController:
     def show(parameters):
         post = Post.find(Post.cxn, "posts", parameters["id"])
         template = open('./views/show.html').read()
-        print(post.attributes)
         attributes = {key:str(post.attributes[key]) for key in post.attributes}
-        print(attributes)
         definitions = dict(list(parameters.items()) + list(attributes.items()))
         return TemplateEngine(template, definitions).render()

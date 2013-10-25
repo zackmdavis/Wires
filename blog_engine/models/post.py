@@ -8,7 +8,7 @@ import sqlite3
 
 class Post(SqlObject):
 
-    cxn = sqlite3.connect('./demo_database.db')
+    cxn = sqlite3.connect('./database.db')
     cxn.row_factory = sqlite3.Row
 
     def __init__(self, title, author_id, body):
