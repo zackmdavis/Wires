@@ -1,6 +1,6 @@
-from sys import path
-path.append('../..')
 from wires import *
+
+from models.post import Post
 
 class PostsController:
 
@@ -9,5 +9,10 @@ class PostsController:
         return TemplateEngine(template, parameters).render()
 
     def show(parameters):
+        post = Post.find(Post.cxn, "posts", parameters["id"])
         template = open('./views/show.html').read()
-        return TemplateEngine(template, parameters).render()
+        print(post.attributes)
+        attributes = {key:str(post.attributes[key]) for key in post.attributes}
+        print(attributes)
+        definitions = dict(list(parameters.items()) + list(attributes.items()))
+        return TemplateEngine(template, definitions).render()
