@@ -4,6 +4,10 @@ from collections import OrderedDict
 
 from urllib.parse import parse_qs
 
+from http.cookies import SimpleCookie
+
+from pdb import set_trace as debug
+
 class RequestHandler(http.server.BaseHTTPRequestHandler):
 
     get = OrderedDict()
@@ -32,11 +36,20 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def return_success(self, page):
         self.send_response(200)
         self.send_header("Content-type", "text/html")
+        #debug()
+        test_cookie = SimpleCookie()
+        test_cookie.load({"session": "the_session_token"})
+        cookie_keyword, cookie_value = [s for s in test_cookie.output().split(': ')]
+        self.send_header(cookie_keyword, cookie_value)
         self.end_headers()
         self.wfile.write(bytes(page, 'UTF-8'))
 
     def do_GET(self):
         action, parameters = RequestHandler.full_action(self.path, self.get)
+        the_cookie = SimpleCookie()
+        if self.headers.get('Cookie'):
+            the_cookie.load(self.headers.get('Cookie'))
+        #debug()
         if action:
             page = action(parameters)
             self.return_success(page)
