@@ -6,8 +6,6 @@ from urllib.parse import parse_qs
 
 from http.cookies import SimpleCookie
 
-from pdb import set_trace as debug
-
 class RequestHandler(http.server.BaseHTTPRequestHandler):
 
     get = OrderedDict()
@@ -26,6 +24,26 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
                 break
         return (action, parameters)
 
+    def dictionary_from_cookie(self):
+        cookie = SimpleCookie()
+        if self.headers.get('Cookie'):
+            cookie.load(self.headers.get('Cookie'))
+            cookie_parameters = {key: cookie[key].value for key in cookie}
+            for key in cookie_parameters:
+                try:
+                    cookie_parameters[key] = int(cookie_parameters[key])
+                except ValueError:
+                    pass
+            return cookie_parameters
+        else:
+            return {}
+
+    def set_cookie_from_dictionary(self, cookie_parameters):
+        cookie = SimpleCookie(cookie_parameters)
+        for key in cookie:
+            cookie[key]['path'] = '/'
+            self.send_header("Set-Cookie", cookie[key].OutputString())
+
     def return_error(self, code, message):
         self.send_response(code)
         self.send_header("Content-type", "text/html")
@@ -33,26 +51,25 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         page = "<html><head></head><body><h2>{0}</h2></body></html>".format(message)
         self.wfile.write(bytes(page, 'UTF-8'))
 
-    def return_success(self, page):
+    def return_success(self, page, cookie_parameters):
         self.send_response(200)
         self.send_header("Content-type", "text/html")
-        #debug()
-        test_cookie = SimpleCookie()
-        test_cookie.load({"session": "the_session_token"})
-        cookie_keyword, cookie_value = [s for s in test_cookie.output().split(': ')]
-        self.send_header(cookie_keyword, cookie_value)
+        self.set_cookie_from_dictionary(cookie_parameters)
         self.end_headers()
         self.wfile.write(bytes(page, 'UTF-8'))
 
     def do_GET(self):
         action, parameters = RequestHandler.full_action(self.path, self.get)
-        the_cookie = SimpleCookie()
-        if self.headers.get('Cookie'):
-            the_cookie.load(self.headers.get('Cookie'))
-        #debug()
+        parameters.update(self.dictionary_from_cookie())
         if action:
             page = action(parameters)
-            self.return_success(page)
+            cookie_keys = ["session_token", "number_of_pages"]
+            cookie_parameters = {key: parameters[key] for key in parameters if key in cookie_keys}
+            try:
+                cookie_parameters["number_of_pages"] += 1
+            except:
+                cookie_parameters["number_of_pages"] = 1
+            self.return_success(page, cookie_parameters)
         else:
             self.return_error(404, "Not Found")
 
@@ -65,6 +82,6 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             body_parameters = {key.decode('utf-8'): raw_body_parameters[key][0].decode('utf-8') for key in raw_body_parameters}
             parameters.update(body_parameters)
             page = action(parameters)
-            self.return_success(page)
+            self.return_success(page, {})
         else:
             self.return_error(500, "Internal Server Error")
