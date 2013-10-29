@@ -8,15 +8,16 @@ CREATE TABLE users (
   id INTEGER PRIMARY KEY,
   username VARCHAR(30),
   display_name VARCHAR(60),
-  password_digest VARCHAR(30)
+  password_digest VARCHAR(50),
+  session_token VARCHAR(50)
 );
 
-INSERT INTO users (id, username, display_name, password_digest)
-VALUES (1, "admin", "Administrator", "d033e22ae348aeb5660fc2140aec35850c4da997");
-INSERT INTO users (id, username, display_name, password_digest)
-VALUES (2, "ts", "Twilight Sparkle", "850b4d7aa8e83b4c8121be5e4ad86739cf73ca01");
-INSERT INTO users (id, username, display_name, password_digest)
-VALUES (3, "third", "Third User", "34fb3300b9a77bebdc988ec3edd0d4a6a42a26f9");
+INSERT INTO users (id, username, display_name, password_digest, session_token)
+VALUES (1, "admin", "Administrator", "d033e22ae348aeb5660fc2140aec35850c4da997", '');
+INSERT INTO users (id, username, display_name, password_digest, session_token)
+VALUES (2, "ts", "Twilight Sparkle", "850b4d7aa8e83b4c8121be5e4ad86739cf73ca01", '');
+INSERT INTO users (id, username, display_name, password_digest, session_token)
+VALUES (3, "third", "Third User", "34fb3300b9a77bebdc988ec3edd0d4a6a42a26f9", '');
 
 
 INSERT INTO posts (id, title, body, author_id)

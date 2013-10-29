@@ -15,7 +15,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
     @staticmethod
     def full_action(path, routes):
-        action, parameters = None, None
+        action, parameters = None, {}
         for route in routes.keys():
             match = route.match(path)
             if match:
@@ -75,13 +75,26 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_POST(self):
         action, parameters = RequestHandler.full_action(self.path, self.post)
+        parameters.update(self.dictionary_from_cookie())
         if action:
             content_length = int(self.headers.get('Content-Length'))
             body = self.rfile.read(content_length)
             raw_body_parameters = parse_qs(body)
             body_parameters = {key.decode('utf-8'): raw_body_parameters[key][0].decode('utf-8') for key in raw_body_parameters}
             parameters.update(body_parameters)
-            page = action(parameters)
-            self.return_success(page, {})
+            cookie_keys = ["session_token", "number_of_pages"]
+            cookie_parameters = {key: parameters[key] for key in parameters if key in cookie_keys}
+            if action.__name__ == "login":
+                session_token = action(parameters)
+                if session_token:
+                    cookie_parameters["session_token"] = session_token
+                    page = "<html><head></head><body><h2>{0}</h2></body></html>".format("Successfully logged in!")
+                else:
+                    page = "<html><head></head><body><h2>{0}</h2></body></html>".format("Invalid credentials")
+            elif action.__name__ == "logout":
+                raise NotImplementedError
+            else:
+                page = action(parameters)
+            self.return_success(page, cookie_parameters)
         else:
             self.return_error(500, "Internal Server Error")
