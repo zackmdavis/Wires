@@ -12,8 +12,11 @@ class PostsController:
         template = open('./views/posts/index.html').read()
         posts = Post.all(Post.cxn, "posts")
         post_template = open('./views/posts/show.html').read()
-        rendered_posts = "<br><br>".join([TemplateEngine(post_template, PostsController.definitions(post, {"id":post.id})).render() for post in posts])
-        return TemplateEngine(template, {"rendered_posts": rendered_posts}).render()
+        rendered_posts = "<br><br>".join([TemplateEngine(post_template,
+                                         PostsController.definitions(post, {"id":post.id})).render_partial()
+                                         for post in posts])
+        index_definitions = {"number_of_pages": str(parameters["number_of_pages"]), "rendered_posts": rendered_posts}
+        return TemplateEngine(template, index_definitions).render()
 
     def show(parameters):
         post = Post.find(Post.cxn, "posts", parameters["id"])
