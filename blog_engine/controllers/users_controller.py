@@ -6,8 +6,7 @@ class UsersController:
 
     def new(parameters):
         template = open('./views/users/new.html').read()
-        definitions = {}
-        return TemplateEngine(template, definitions).render()
+        return TemplateEngine(template, parameters).render()
 
     def create(parameters):
         pass # TODO

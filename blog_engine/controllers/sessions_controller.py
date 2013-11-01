@@ -9,11 +9,10 @@ class SessionsController:
 
     def new(parameters):
         template = open('./views/sessions/new.html').read()
-        definitions = {}
-        return TemplateEngine(template, definitions).render()
+        return TemplateEngine(template, parameters).render()
 
     def login(parameters):
-        user = User.where(User.cxn, "users", {"username": parameters["username"]})
+        user = User.where(User.cxn, "users", {"username": parameters["username"]})[0]
         if user.authenticate(parameters["password"]):
             session_token = user.set_session_token()
             user.save()
