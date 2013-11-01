@@ -28,6 +28,7 @@ class PostsController:
         return TemplateEngine(template, parameters).render()
 
     def create(parameters):
+        parameters["body"] = parameters["body"].replace("\n", "<br>")
         new_post = Post(Post.cxn, "posts", parameters)
         new_post.save()
         parameters.update({"id": str(new_post.id)})
