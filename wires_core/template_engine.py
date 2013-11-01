@@ -23,4 +23,9 @@ class TemplateEngine:
         page = re.sub("<%=\s*yield\s*%>", page, self.master)
         for substitution in self.substitutions:
             page = re.sub(substitution, self.substitutions[substitution], page)
+        page = self.ignore_unused_prompts(page)
         return page
+
+    @staticmethod
+    def ignore_unused_prompts(page):
+        return re.sub("<%=\s*\S+\s*%>", "", page)
