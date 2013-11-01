@@ -5,7 +5,9 @@ class TemplateEngine:
     def __init__(self, template, definitions):
         self.master = open('./views/layouts/application.html').read()
         self.template = template
-        self.definitions = definitions
+        self.definitions = definitions.copy()
+        for definition in self.definitions:
+            self.definitions[definition] = str(self.definitions[definition])
         self.substitutions = {}
         for definition in self.definitions:
             self.substitutions[re.compile("<%=\s*{0}\s*%>".format(definition))] = self.definitions[definition]

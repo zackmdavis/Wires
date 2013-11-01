@@ -61,14 +61,15 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         action, parameters = RequestHandler.full_action(self.path, self.get)
         parameters.update(self.dictionary_from_cookie())
+        cookie_keys = ["session_token", "number_of_pages"]
+        cookie_parameters = {key: parameters[key] for key in parameters if key in cookie_keys}
+        try:
+            cookie_parameters["number_of_pages"] += 1
+        except KeyError:
+            cookie_parameters["number_of_pages"] = 1
+        parameters.update(cookie_parameters)
         if action:
             page = action(parameters)
-            cookie_keys = ["session_token", "number_of_pages"]
-            cookie_parameters = {key: parameters[key] for key in parameters if key in cookie_keys}
-            try:
-                cookie_parameters["number_of_pages"] += 1
-            except:
-                cookie_parameters["number_of_pages"] = 1
             self.return_success(page, cookie_parameters)
         else:
             self.return_error(404, "Not Found")
@@ -82,12 +83,10 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             raw_body_parameters = parse_qs(body)
             body_parameters = {key.decode('utf-8'): raw_body_parameters[key][0].decode('utf-8') for key in raw_body_parameters}
             parameters.update(body_parameters)
-            cookie_keys = ["session_token", "number_of_pages"]
-            cookie_parameters = {key: parameters[key] for key in parameters if key in cookie_keys}
             if action.__name__ == "login":
                 session_token = action(parameters)
                 if session_token:
-                    cookie_parameters["session_token"] = session_token
+                    parameters["session_token"] = session_token
                     page = "<html><head></head><body><h2>{0}</h2></body></html>".format("Successfully logged in!")
                 else:
                     page = "<html><head></head><body><h2>{0}</h2></body></html>".format("Invalid credentials")
@@ -95,6 +94,8 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
                 raise NotImplementedError
             else:
                 page = action(parameters)
+            cookie_keys = ["session_token", "number_of_pages"]
+            cookie_parameters = {key: parameters[key] for key in parameters if key in cookie_keys}
             self.return_success(page, cookie_parameters)
         else:
             self.return_error(500, "Internal Server Error")

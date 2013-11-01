@@ -32,14 +32,14 @@ class SqlObject(MassObject):
         query = "SELECT * FROM {0};".format(table_name)
         results = db_connection.execute(query).fetchall()
         result_dicts = [cls.dict_from_row(row) for row in results]
-        return [SqlObject(db_connection, table_name, rd, rd["id"]) for rd in result_dicts]
+        return [cls(db_connection, table_name, rd, rd["id"]) for rd in result_dicts]
 
     @classmethod
     def find(cls, db_connection, table_name, id):
         query = "SELECT * FROM {0} WHERE id = ?;".format(table_name)
         result = db_connection.execute(query, (id,)).fetchone()
         result_dict = cls.dict_from_row(result)
-        return SqlObject(db_connection, table_name, result_dict, id)
+        return cls(db_connection, table_name, result_dict, id)
 
     @classmethod
     def where(cls, db_connection, table_name, search_parameters):
@@ -48,7 +48,7 @@ class SqlObject(MassObject):
         query = "SELECT * FROM {0} WHERE {1}".format(table_name, where_string)
         results = db_connection.execute(query, tuple(search_parameters.values())).fetchall()
         result_dicts = [cls.dict_from_row(row) for row in results]
-        return [SqlObject(db_connection, table_name, rd, rd["id"]) for rd in result_dicts]
+        return [cls(db_connection, table_name, rd, rd["id"]) for rd in result_dicts]
 
     @staticmethod
     def question_marks(n):

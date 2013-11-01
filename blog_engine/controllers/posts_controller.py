@@ -25,13 +25,13 @@ class PostsController:
 
     def new(parameters):
         template = open('./views/posts/new.html').read()
-        definitions = {}
-        return TemplateEngine(template, definitions).render()
+        return TemplateEngine(template, parameters).render()
 
     def create(parameters):
-        new_post = Post(parameters["title"], parameters["author_id"], parameters["body"])
+        new_post = Post(Post.cxn, "posts", parameters)
         new_post.save()
-        return PostsController.show({"id": str(new_post.id)})
+        parameters.update({"id": str(new_post.id)})
+        return PostsController.show(parameters)
 
     # helper method for construction substitution definitions from supplied
     # object and request parameters
