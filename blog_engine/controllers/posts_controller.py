@@ -1,6 +1,7 @@
 from wires import *
 
 from models.post import Post
+from models.user import User
 
 class PostsController:
 
@@ -9,6 +10,7 @@ class PostsController:
     # dictionaries of the request handler.
 
     def index(parameters):
+        print(parameters)
         template = open('./views/posts/index.html').read()
         posts = Post.all(Post.cxn, "posts")
         post_template = open('./views/posts/show.html').read()
@@ -16,6 +18,7 @@ class PostsController:
                                          PostsController.definitions(post, {"id":post.id})).render_partial()
                                          for post in posts])
         index_definitions = {"number_of_pages": str(parameters["number_of_pages"]), "rendered_posts": rendered_posts}
+        index_definitions["login_status_message"] = PostsController.login_status_message(parameters)
         return TemplateEngine(template, index_definitions).render()
 
     def show(parameters):
@@ -39,3 +42,12 @@ class PostsController:
     def definitions(post, parameters):
         defns_dict = dict(list(parameters.items()) + list(post.attributes.items()))
         return {key: str(defns_dict[key]) for key in defns_dict}
+
+    def login_status_message(parameters):
+        if "session_token" in parameters:
+            try:
+                current_user = User.where(User.cxn, "users", {"session_token": parameters["session_token"]})[0]
+                return "logged in as {0} ({1})".format(current_user.display_name, current_user.username)
+            except IndexError:
+                pass
+        return "not logged in"

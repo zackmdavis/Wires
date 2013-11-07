@@ -87,7 +87,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
                 session_token = action(parameters)
                 if session_token:
                     parameters["session_token"] = session_token
-                    page = "<html><head></head><body><h2>{0}</h2></body></html>".format("Successfully logged in!")
+                    page = "<html><head></head><body><h2>{0}</h2>{1}</body></html>".format("Successfully logged in!", "<a href='/posts'><em>(home)</em></a>")
                 else:
                     page = "<html><head></head><body><h2>{0}</h2></body></html>".format("Invalid credentials")
             elif action.__name__ == "logout":
