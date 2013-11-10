@@ -2,25 +2,29 @@ from sys import path
 path.append('..')
 from wires import *
 
-from controllers.posts_controller import *
-from controllers.sessions_controller import *
-from controllers.users_controller import *
+import controllers.posts_controller as posts_controller
+import controllers.sessions_controller as sessions_controller
+import controllers.users_controller as users_controller
 
 import re
 
 from pdb import set_trace as debug
 
-RequestHandler.get[re.compile("^/posts$")] = PostsController.index
-RequestHandler.get[re.compile("^/posts/(?P<id>\d+)$")] = PostsController.show
-RequestHandler.get[re.compile("^/posts/new$")] = PostsController.new
-RequestHandler.post[re.compile("^/posts$")] = PostsController.create
 
-RequestHandler.get[re.compile("^/signup$")] = UsersController.new
-RequestHandler.post[re.compile("^/signup$")] = UsersController.create
+RequestHandler.get[re.compile("^$")] = posts_controller.index
+RequestHandler.get[re.compile("^/$")] = posts_controller.index
 
-RequestHandler.get[re.compile("^/login$")] = SessionsController.new
-RequestHandler.post[re.compile("^/login$")] = SessionsController.login
-RequestHandler.delete[re.compile("^/logout$")] = SessionsController.logout
+RequestHandler.get[re.compile("^/posts$")] = posts_controller.index
+RequestHandler.get[re.compile("^/posts/(?P<id>\d+)$")] = posts_controller.show
+RequestHandler.get[re.compile("^/posts/new$")] = posts_controller.new
+RequestHandler.post[re.compile("^/posts$")] = posts_controller.create
+
+RequestHandler.get[re.compile("^/signup$")] = users_controller.new
+RequestHandler.post[re.compile("^/signup$")] = users_controller.create
+
+RequestHandler.get[re.compile("^/login$")] = sessions_controller.new
+RequestHandler.post[re.compile("^/login$")] = sessions_controller.login
+RequestHandler.delete[re.compile("^/logout$")] = sessions_controller.logout
 
 if __name__ == '__main__':
     run_server('localhost', 8080, RequestHandler)
