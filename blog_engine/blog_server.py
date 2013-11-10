@@ -24,7 +24,7 @@ RequestHandler.post[re.compile("^/signup$")] = users_controller.create
 
 RequestHandler.get[re.compile("^/login$")] = sessions_controller.new
 RequestHandler.post[re.compile("^/login$")] = sessions_controller.login
-RequestHandler.delete[re.compile("^/logout$")] = sessions_controller.logout
+RequestHandler.get[re.compile("^/logout$")] = sessions_controller.logout
 
 if __name__ == '__main__':
     run_server('localhost', 8080, RequestHandler)

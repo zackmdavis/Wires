@@ -69,7 +69,16 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             cookie_parameters["number_of_pages"] = 1
         parameters.update(cookie_parameters)
         if action:
-            page = action(parameters)
+            if action.__name__ == "logout":
+                # this despite the admitted fact one could make a very
+                # strong case that logging out should be done with a
+                # DELETE request---or possibly POST, but in any case
+                # certainly not GET!
+                action(parameters)
+                cookie_parameters["session_token"] = "loggedout"
+                page = "<html><head></head><body><h2>{0}</h2>{1}</body></html>".format("Successfully logged out!", "<a href='/posts'><em>(home)</em></a>")
+            else:
+                page = action(parameters)
             self.return_success(page, cookie_parameters)
         else:
             self.return_error(404, "Not Found")
@@ -90,8 +99,6 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
                     page = "<html><head></head><body><h2>{0}</h2>{1}</body></html>".format("Successfully logged in!", "<a href='/posts'><em>(home)</em></a>")
                 else:
                     page = "<html><head></head><body><h2>{0}</h2></body></html>".format("Invalid credentials")
-            elif action.__name__ == "logout":
-                raise NotImplementedError
             else:
                 page = action(parameters)
             cookie_keys = ["session_token", "number_of_pages"]
