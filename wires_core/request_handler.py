@@ -58,7 +58,17 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(bytes(page, 'UTF-8'))
 
+    def return_media(self, file_path, file_type):
+        media_file = open(file_path, 'rb').read()
+        self.send_response(200)
+        self.send_header("Content-type", file_type)
+        self.end_headers()
+        self.wfile.write(media_file)
+
     def do_GET(self):
+        if self.path == "/favicon.ico":
+            self.return_media("favicon.ico", "image/ico")
+            return
         action, parameters = RequestHandler.full_action(self.path, self.get)
         parameters.update(self.dictionary_from_cookie())
         cookie_keys = ["session_token", "number_of_pages"]
