@@ -58,6 +58,12 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(bytes(page, 'UTF-8'))
 
+    def redirect(self, location, cookie_parameters):
+        self.send_response(303)
+        self.send_header("Location", location)
+        self.set_cookie_from_dictionary(cookie_parameters)
+        self.end_headers()
+
     def return_media(self, file_path, file_type):
         media_file = open(file_path, 'rb').read()
         self.send_response(200)
@@ -65,14 +71,17 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(media_file)
 
+    def get_cookie_parameters(self, parameters):
+        cookie_keys = ["session_token", "number_of_pages"]
+        return {key: parameters[key] for key in parameters if key in cookie_keys}
+
     def do_GET(self):
         if self.path == "/favicon.ico":
             self.return_media("favicon.ico", "image/ico")
             return
         action, parameters = RequestHandler.full_action(self.path, self.get)
         parameters.update(self.dictionary_from_cookie())
-        cookie_keys = ["session_token", "number_of_pages"]
-        cookie_parameters = {key: parameters[key] for key in parameters if key in cookie_keys}
+        cookie_parameters = self.get_cookie_parameters(parameters)
         try:
             cookie_parameters["number_of_pages"] += 1
         except KeyError:
@@ -86,10 +95,10 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
                 # certainly not GET!
                 action(parameters)
                 cookie_parameters["session_token"] = "loggedout"
-                page = "<html><head></head><body><h2>{0}</h2>{1}</body></html>".format("Successfully logged out!", "<a href='/posts'><em>(home)</em></a>")
+                self.redirect("/", cookie_parameters)
             else:
                 page = action(parameters)
-            self.return_success(page, cookie_parameters)
+                self.return_success(page, cookie_parameters)
         else:
             self.return_error(404, "Not Found")
 
@@ -102,17 +111,17 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             raw_body_parameters = parse_qs(body)
             body_parameters = {key.decode('utf-8'): raw_body_parameters[key][0].decode('utf-8') for key in raw_body_parameters}
             parameters.update(body_parameters)
+            cookie_parameters = self.get_cookie_parameters(parameters)
             if action.__name__ == "login":
                 session_token = action(parameters)
                 if session_token:
-                    parameters["session_token"] = session_token
-                    page = "<html><head></head><body><h2>{0}</h2>{1}</body></html>".format("Successfully logged in!", "<a href='/posts'><em>(home)</em></a>")
+                    cookie_parameters["session_token"] = session_token
+                    self.redirect("/", cookie_parameters)
                 else:
-                    page = "<html><head></head><body><h2>{0}</h2></body></html>".format("Invalid credentials")
+                    page = "<html><head></head><body><h2>{0}</h2>{1}</body></html>".format("Invalid credentials", "<a href='/posts'><em>(home)</em></a>")
+                    self.return_success(page, cookie_parameters)
             else:
                 page = action(parameters)
-            cookie_keys = ["session_token", "number_of_pages"]
-            cookie_parameters = {key: parameters[key] for key in parameters if key in cookie_keys}
-            self.return_success(page, cookie_parameters)
+                self.return_success(page, cookie_parameters)
         else:
             self.return_error(500, "Internal Server Error")
