@@ -2,9 +2,13 @@ import os
 
 from sys import path
 path.append('../..')
+path.append('.')
+path.append('models')
 from wires import *
 
 import sqlite3
+
+from user import User
 
 class Post(SqlObject):
 
@@ -15,4 +19,5 @@ class Post(SqlObject):
         attributes = {attribute: attributes[attribute] for attribute in attributes
                       if attribute in ("title", "body", "author_id")}
         super().__init__(self.cxn, "posts", attributes, id)
+        #self.belongs_to("author", "User", "author_id")
 

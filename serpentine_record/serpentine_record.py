@@ -96,3 +96,15 @@ class SqlObject(MassObject):
             self.create()
         else:
             self.update()
+
+    # not working yet
+    def has_many(self, association, class_name, foreign_key = None, primary_key = "id"):
+        foreign_key = foreign_key or self.__class__.__name__.lower()+"_id"
+        search = lambda: eval(class_name).where({foreign_key: self.__dict_[primary_key]})
+        setattr(self, association, search)
+ 
+    # not working yet
+    def belongs_to(self, association, class_name, foreign_key = None, primary_key = "id"):
+        foreign_key = foreign_key or class_name.lower()+"_id"
+        search = lambda: eval(class_name).find_where({primary_key: self.__dict__[foreign_key]})
+        setattr(self, association, search)

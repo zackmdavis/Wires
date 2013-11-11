@@ -6,10 +6,10 @@ import controllers.posts_controller as posts_controller
 import controllers.sessions_controller as sessions_controller
 import controllers.users_controller as users_controller
 
+from models.user import User
+from models.post import Post
+
 import re
-
-from pdb import set_trace as debug
-
 
 RequestHandler.get[re.compile("^$")] = posts_controller.index
 RequestHandler.get[re.compile("^/$")] = posts_controller.index

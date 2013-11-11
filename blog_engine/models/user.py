@@ -18,6 +18,7 @@ class User(SqlObject):
         attributes = {attribute: attributes[attribute] for attribute in attributes
                       if attribute in ("username", "display_name", "password_digest", "session_token")}
         super().__init__(self.cxn, "users", attributes, id)
+        #self.has_many("posts", "Post", "author_id")
 
     def set_session_token(self):
         self.session_token = sha1(bytes(self.username + str(time()), 'utf-8')).hexdigest()
