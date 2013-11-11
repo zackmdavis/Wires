@@ -50,6 +50,14 @@ class SqlObject(MassObject):
         result_dicts = [cls.dict_from_row(row) for row in results]
         return [cls(db_connection, table_name, rd, rd["id"]) for rd in result_dicts]
 
+    @classmethod
+    def find_where(cls, db_connection, table_name, search_parameters):
+        results = cls.where(db_connection, table_name, search_parameters)
+        if results:
+            return results[0]
+        else:
+            return None
+
     @staticmethod
     def question_marks(n):
         if n == 1:
