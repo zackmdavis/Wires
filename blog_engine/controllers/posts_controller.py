@@ -3,6 +3,8 @@ from wires import *
 from models.post import Post
 from models.user import User
 
+from pdb import set_trace as debug
+
 def index(parameters):
     template = open('./views/posts/index.html').read()
     posts = Post.all(Post.cxn, "posts")
@@ -34,6 +36,7 @@ def create(parameters):
 # object and request parameters
 def definitions(post, parameters):
     defns_dict = dict(list(parameters.items()) + list(post.attributes.items()))
+    defns_dict["author_display_name"] = post.author(globals()).display_name
     return {key: str(defns_dict[key]) for key in defns_dict}
 
 def login_status_message(parameters):

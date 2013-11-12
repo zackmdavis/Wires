@@ -22,6 +22,7 @@ class SqlObject(MassObject):
         del attr_dict['db_connection']
         del attr_dict['cursor']
         del attr_dict['id']
+        attr_dict = {key: attr_dict[key] for key in attr_dict if type(attr_dict[key]).__name__ != "function"}
         return attr_dict
 
     def __repr__(self):
@@ -100,11 +101,11 @@ class SqlObject(MassObject):
     # not working yet
     def has_many(self, association, class_name, foreign_key = None, primary_key = "id"):
         foreign_key = foreign_key or self.__class__.__name__.lower()+"_id"
-        search = lambda: eval(class_name).where({foreign_key: self.__dict_[primary_key]})
+        search = lambda context: eval(class_name, context).where({foreign_key: self.__dict_[primary_key]})
         setattr(self, association, search)
- 
+
     # not working yet
     def belongs_to(self, association, class_name, foreign_key = None, primary_key = "id"):
         foreign_key = foreign_key or class_name.lower()+"_id"
-        search = lambda: eval(class_name).find_where({primary_key: self.__dict__[foreign_key]})
+        search = lambda context: eval(class_name, context).find_where(eval(class_name, context).cxn, eval(class_name, context).table_name, {primary_key: self.__dict__[foreign_key]})
         setattr(self, association, search)
