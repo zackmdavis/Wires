@@ -37,6 +37,7 @@ def create(parameters):
 def definitions(post, parameters):
     defns_dict = dict(list(parameters.items()) + list(post.attributes.items()))
     defns_dict["author_display_name"] = post.author(globals()).display_name
+    defns_dict["author_id"] = post.author(globals()).id
     return {key: str(defns_dict[key]) for key in defns_dict}
 
 def login_status_message(parameters):

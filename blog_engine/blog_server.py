@@ -19,6 +19,8 @@ RequestHandler.get[re.compile("^/posts/(?P<id>\d+)$")] = posts_controller.show
 RequestHandler.get[re.compile("^/posts/new$")] = posts_controller.new
 RequestHandler.post[re.compile("^/posts$")] = posts_controller.create
 
+RequestHandler.get[re.compile("^/users/(?P<id>\d+)$")] = users_controller.show
+
 RequestHandler.get[re.compile("^/signup$")] = users_controller.new
 RequestHandler.post[re.compile("^/signup$")] = users_controller.create
 
