@@ -3,14 +3,20 @@ from wires import *
 from models.user import User
 from models.post import Post
 
+from hashlib import sha1
+
 def new(parameters):
     template = open('./views/users/new.html').read()
     return TemplateEngine(template, parameters).render()
 
 def create(parameters):
-    pass # TODO
-    # user.__init__ method signature--
-    # (self, username, display_name, password, confirm_password):
+    if parameters["password"] == parameters["confirm_password"]:
+        parameters["password_digest"] = sha1(bytes(parameters["password"], 'utf-8')).hexdigest()
+        user = User(User.cxn, "users", parameters)
+        user.save()
+        return "<html><head></head><body><h2>{0}</h2>{1}</body></html>".format("User created!", "<a href='/'><em>(home)</em></a>")
+    else:
+        return "<html><head></head><body><h2>{0}</h2>{1}</body></html>".format("password confirmation doesn't match", "<a href='/'><em>(home)</em></a>")
 
 def show(parameters):
     user = User.find(User.cxn, "users", parameters["id"])
