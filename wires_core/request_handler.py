@@ -79,6 +79,9 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         if self.path == "/favicon.ico":
             self.return_media("favicon.ico", "image/ico")
             return
+        if self.path == "/application.css":
+            self.return_media("templates/layouts/application.css", "text/css")
+            return
         action, parameters = RequestHandler.full_action(self.path, self.get)
         parameters.update(self.dictionary_from_cookie())
         cookie_parameters = self.get_cookie_parameters(parameters)
