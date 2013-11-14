@@ -6,7 +6,7 @@ from models.post import Post
 from hashlib import sha1
 
 def new(parameters):
-    template = open('./views/users/new.html').read()
+    template = open('./templates/users/new.html').read()
     return TemplateEngine(template, parameters).render()
 
 def create(parameters):
@@ -20,7 +20,7 @@ def create(parameters):
 
 def show(parameters):
     user = User.find(User.cxn, "users", parameters["id"])
-    template = open('./views/users/show.html').read()
+    template = open('./templates/users/show.html').read()
     definitions = parameters.copy()
     posts = user.posts(globals())
     post_display_list = "<ul>" + ''.join(['<li><a href="/posts/{0}">{1}</a></li>'.format(post.id, post.title)

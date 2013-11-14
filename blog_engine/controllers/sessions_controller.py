@@ -6,7 +6,7 @@ from models.user import User
 from hashlib import sha1
 
 def new(parameters):
-    template = open('./views/sessions/new.html').read()
+    template = open('./templates/sessions/new.html').read()
     return TemplateEngine(template, parameters).render()
 
 def login(parameters):

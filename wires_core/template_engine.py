@@ -3,7 +3,7 @@ import re
 class TemplateEngine:
 
     def __init__(self, template, definitions):
-        self.master = open('./views/layouts/application.html').read()
+        self.master = open('./templates/layouts/application.html').read()
         self.template = template
         self.definitions = definitions.copy()
         for definition in self.definitions:

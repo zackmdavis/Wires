@@ -6,9 +6,9 @@ from models.user import User
 from pdb import set_trace as debug
 
 def index(parameters):
-    template = open('./views/posts/index.html').read()
+    template = open('./templates/posts/index.html').read()
     posts = Post.all(Post.cxn, "posts")
-    post_template = open('./views/posts/show.html').read()
+    post_template = open('./templates/posts/show.html').read()
     rendered_posts = "<br><br>".join([TemplateEngine(post_template,
                                      definitions(post, {"id":post.id})).render_partial()
                                      for post in posts])
@@ -18,11 +18,11 @@ def index(parameters):
 
 def show(parameters):
     post = Post.find(Post.cxn, "posts", parameters["id"])
-    template = open('./views/posts/show.html').read()
+    template = open('./templates/posts/show.html').read()
     return TemplateEngine(template, definitions(post, parameters)).render()
 
 def new(parameters):
-    template = open('./views/posts/new.html').read()
+    template = open('./templates/posts/new.html').read()
     return TemplateEngine(template, parameters).render()
 
 def create(parameters):
