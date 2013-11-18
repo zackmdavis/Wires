@@ -5,10 +5,7 @@ import unittest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-from sys import path
-path.append('../')
-
-class TestBlogEngine(unittest.TestCase):
+class TestLinks(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -66,6 +63,40 @@ class TestBlogEngine(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.driver.close()
+
+class TestAuthentication(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.driver = webdriver.Firefox()
+
+    def setUp(self):
+        self.driver.get("http://localhost:8080/")
+
+    def test_sign_in_and_out(self):
+        # shouldn't be logged in to start with
+        auth_msg = self.driver.find_element_by_id("authentication_status").text
+        self.assertIn("not logged in", auth_msg)
+
+        # should be able to log in
+        self.driver.find_element_by_id("login_link").click()
+        username_field = self.driver.find_element_by_id("username")
+        username_field.send_keys("admin")
+        password_field = self.driver.find_element_by_id("password")
+        password_field.send_keys("admin")
+        self.driver.find_element_by_id("login_submit").click()
+        auth_msg = self.driver.find_element_by_id("authentication_status").text
+        self.assertIn("logged in as Administrator (admin)", auth_msg)
+        
+        # should be able to log out
+        self.driver.find_element_by_id("logout_link").click()
+        auth_msg = self.driver.find_element_by_id("authentication_status").text
+        self.assertIn("not logged in", auth_msg)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.driver.close()
+        
 
 if __name__ == '__main__':
     unittest.main()

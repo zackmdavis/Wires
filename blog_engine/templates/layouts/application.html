@@ -4,13 +4,15 @@
   <link rel="stylesheet" href="/application.css">
 </head>
 <body>
-<p><a href="/posts"><em>(home)</em></a></p>
-<p>
-  <a href="/login">Log in</a> &bull;
-  <a href="/logout">Log out</a> &bull;
-  <a href="/signup">Sign up</a>
+<p><a href="/"><em>(home)</em></a></p>
+<p class="authentication_links">
+  <a id="login_link" href="/login">Log in</a> &bull;
+  <a id="logout_link" href="/logout">Log out</a> &bull;
+  <a id="signup_link" href="/signup">Sign up</a>
 </p>
-<%= login_status_message %>
+<div id="authentication_status">
+  <%= login_status_message %>
+</div>
 <hr>
 
 <%= yield %>
