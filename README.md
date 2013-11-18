@@ -3,3 +3,5 @@ Wires is a lightwight web framework in Python, developed in tandem with its flag
     python3 blog_server.py
 
 and visit *localhost:8080* in your favorite browser.
+
+Selenium is required to run the integration tests in test/test_blog_engine.py.
