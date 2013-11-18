@@ -42,9 +42,7 @@ def definitions(post, parameters):
 
 def login_status_message(parameters):
     if "session_token" in parameters:
-        try:
-            current_user = User.where(User.cxn, "users", {"session_token": parameters["session_token"]})[0]
+        current_user = User.find_where(User.cxn, "users", {"session_token": parameters["session_token"]})
+        if current_user:
             return "logged in as {0} ({1})".format(current_user.display_name, current_user.username)
-        except IndexError:
-            pass
     return "not logged in"
