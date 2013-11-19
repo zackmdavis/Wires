@@ -19,6 +19,9 @@ def index(parameters):
 def show(parameters):
     post = Post.find(Post.cxn, "posts", parameters["id"])
     template = open('./templates/posts/show.html').read()
+    show_post_script_tag = '<script src="/show_post.js"></script>'
+    new_comment_link_html = '<a id="new_comment_link" href="#">Make a new comment!</a>'
+    parameters.update({"new_comment_link": new_comment_link_html, "show_post_script_tag": show_post_script_tag})
     return TemplateEngine(template, definitions(post, parameters)).render()
 
 def new(parameters):

@@ -82,6 +82,9 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         if self.path == "/application.css":
             self.return_media("templates/layouts/application.css", "text/css")
             return
+        if self.path[-3:] == ".js":
+            self.return_media("javascripts/" + self.path, "text/javascript")
+            return
         action, parameters = RequestHandler.full_action(self.path, self.get)
         parameters.update(self.dictionary_from_cookie())
         cookie_parameters = self.get_cookie_parameters(parameters)
