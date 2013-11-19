@@ -27,10 +27,16 @@ def new(parameters):
 
 def create(parameters):
     parameters["body"] = parameters["body"].replace("\n", "<br>")
-    new_post = Post(Post.cxn, "posts", parameters)
-    new_post.save()
-    parameters.update({"id": str(new_post.id)})
-    return show(parameters)
+    user = current_user(parameters)
+    if user:
+        parameters.update({"author_id": user.id})
+        new_post = Post(Post.cxn, "posts", parameters)
+        new_post.save()
+        parameters.update({"id": str(new_post.id)})
+        return show(parameters)
+    else:
+        page = "<html><head></head><body><h2>{0}</h2>{1}</body></html>".format("You must be logged in to submit a new post", "<a href='/'><em>(home)</em></a>")
+        return page
 
 # helper method for construction substitution definitions from supplied
 # object and request parameters
@@ -40,9 +46,15 @@ def definitions(post, parameters):
     defns_dict["author_id"] = post.author(globals()).id
     return {key: str(defns_dict[key]) for key in defns_dict}
 
-def login_status_message(parameters):
+def current_user(parameters):
     if "session_token" in parameters:
-        current_user = User.find_where(User.cxn, "users", {"session_token": parameters["session_token"]})
-        if current_user:
-            return "logged in as {0} ({1})".format(current_user.display_name, current_user.username)
+        user = User.find_where(User.cxn, "users", {"session_token": parameters["session_token"]})
+        return user
+    else:
+        return None
+
+def login_status_message(parameters):
+    user = current_user(parameters)
+    if user:
+        return "logged in as {0} ({1})".format(user.display_name, user.username)
     return "not logged in"

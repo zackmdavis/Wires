@@ -101,8 +101,7 @@ class TestAuthentication(unittest.TestCase):
         auth_msg = self.driver.find_element_by_id("authentication_status").text
         self.assertIn("not logged in", auth_msg)
 
-    def test_can_sign_in_and_post(self):
-        self.log_in()
+    def attempt_post(self):
         self.driver.find_element_by_id("new_post_link").click()
         stamp = str(binascii.b2a_hex(os.urandom(4)), encoding="utf-8")
         title = "Test Post " + stamp
@@ -111,21 +110,25 @@ class TestAuthentication(unittest.TestCase):
         title_field.send_keys(title)
         body_field = self.driver.find_element_by_id("body")
         body_field.send_keys(body)
-        author_id_field = self.driver.find_element_by_id("author_id")
-        author_id_field.send_keys("1")
         self.driver.find_element_by_id("new_post_submit").click()
+        return stamp
+
+    def test_can_sign_in_and_post(self):
+        self.log_in()
+        stamp = self.attempt_post()
         page = self.driver.page_source
         self.assertIn(stamp, page)
         self.log_out()
 
-    # not yet implemented
     def test_cannot_post_if_not_logged_in(self):
-        pass
+        stamp = self.attempt_post()
+        page = self.driver.page_source
+        self.assertNotIn(stamp, page)
 
     @classmethod
     def tearDownClass(cls):
         cls.driver.close()
-        
 
+ 
 if __name__ == '__main__':
     unittest.main()
