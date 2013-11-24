@@ -2,6 +2,7 @@ from wires import *
 
 from models.post import Post
 from models.user import User
+from models.comment import Comment
 
 from pdb import set_trace as debug
 
@@ -19,9 +20,15 @@ def index(parameters):
 def show(parameters):
     post = Post.find(Post.cxn, "posts", parameters["id"])
     template = open('./templates/posts/show.html').read()
+    comment_template = open('./templates/comments/show.html').read()    
     show_post_script_tag = '<script src="/show_post.js"></script>'
+    comments = post.comments(globals())
+    if comments:
+        rendered_comments = "<h3>Comments</h3>" + "".join([TemplateEngine(comment_template, comment.attributes).render_partial() for comment in comments])
+    else:
+        rendered_comments = "<p>No comments yet.</p>"
     new_comment_link_html = '<a id="new_comment_link" href="#">Make a new comment!</a>'
-    parameters.update({"new_comment_link": new_comment_link_html, "show_post_script_tag": show_post_script_tag})
+    parameters.update({"rendered_comments": rendered_comments, "new_comment_link": new_comment_link_html, "show_post_script_tag": show_post_script_tag})
     return TemplateEngine(template, definitions(post, parameters)).render()
 
 def new(parameters):
