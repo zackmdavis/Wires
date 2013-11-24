@@ -6,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 import os, binascii
+from time import sleep
 
 class TestLinks(unittest.TestCase):
 
@@ -129,6 +130,34 @@ class TestAuthentication(unittest.TestCase):
     def tearDownClass(cls):
         cls.driver.close()
 
- 
+class TestComments(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.driver = webdriver.Firefox()
+        cls.driver.implicitly_wait(5)
+
+    def test_can_make_comment(self):
+        self.driver.get("http://localhost:8080/posts/1")
+        self.driver.find_element_by_id("new_comment_link").click()
+        stamp = str(binascii.b2a_hex(os.urandom(4)), encoding="utf-8")
+        name_field = self.driver.find_element_by_id("name")
+        name_field.send_keys("Test Commenter {0}".format(stamp))
+        email_field = self.driver.find_element_by_id("email")
+        email_field.send_keys("test@example.com")
+        comment_field = self.driver.find_element_by_id("comment")
+        comment_body = "This the content of test comment {0}".format(stamp)
+        comment_field.send_keys(comment_body)
+        self.driver.find_element_by_id("submit_comment").click()
+        sleep(1)
+        self.driver.refresh()
+        page = self.driver.page_source
+        self.assertIn(comment_body, page)
+        
+    @classmethod
+    def tearDownClass(cls):
+        cls.driver.close()
+
+
 if __name__ == '__main__':
     unittest.main()

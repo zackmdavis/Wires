@@ -53,7 +53,10 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
     def return_success(self, page, cookie_parameters):
         self.send_response(200)
-        self.send_header("Content-type", "text/html")
+        if "<html" in page:
+            self.send_header("Content-type", "text/html")
+        else:
+            self.send_header("Content-type", "application/json")
         self.set_cookie_from_dictionary(cookie_parameters)
         self.end_headers()
         self.wfile.write(bytes(page, 'UTF-8'))

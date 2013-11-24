@@ -13,5 +13,21 @@ $(document).ready(function() {
 	$('#new_comment_link').remove();
 	var form = $('<div class="form_holder"></div>').html(new_comment_form_html);
 	$('#comments').append(form.hide().fadeIn(400));
+	$('#submit_comment').on("click", function(event) {
+	    event.preventDefault();
+	    $.ajax({
+		url: "/comments",
+		type: "POST",
+		data: {
+		    author: $('#name').val(),
+		    email: $('#email').val(),
+		    body: $('#comment').val(),
+		    post_id: $('#post_title').data("id")
+		},
+		success: function(response) {
+		    console.log(response);
+		}
+	    });
+	});
     });
 });

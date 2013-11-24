@@ -3,11 +3,13 @@ path.append('..')
 from wires import *
 
 import controllers.posts_controller as posts_controller
+import controllers.comments_controller as comments_controller
+
 import controllers.sessions_controller as sessions_controller
 import controllers.users_controller as users_controller
 
-from models.user import User
 from models.post import Post
+from models.user import User
 
 import re
 
@@ -18,6 +20,8 @@ RequestHandler.get[re.compile("^/posts$")] = posts_controller.index
 RequestHandler.get[re.compile("^/posts/(?P<id>\d+)$")] = posts_controller.show
 RequestHandler.get[re.compile("^/posts/new$")] = posts_controller.new
 RequestHandler.post[re.compile("^/posts$")] = posts_controller.create
+
+RequestHandler.post[re.compile("^/comments$")] = comments_controller.create
 
 RequestHandler.get[re.compile("^/users/(?P<id>\d+)$")] = users_controller.show
 
