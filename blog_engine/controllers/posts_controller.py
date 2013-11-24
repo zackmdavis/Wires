@@ -10,9 +10,7 @@ def index(parameters):
     template = open('./templates/posts/index.html').read()
     posts = Post.all(Post.cxn, "posts")
     post_template = open('./templates/posts/show.html').read()
-    rendered_posts = "<br><br>".join([TemplateEngine(post_template,
-                                     definitions(post, {"id":post.id})).render_partial()
-                                     for post in posts])
+    rendered_posts = "<br><br>".join([TemplateEngine(post_template, definitions(post, {"id": post.id, "comments_link": '<p><a href="/posts/{0}#comments">{1} comments</p>'.format(post.id, len(post.comments(globals())))})).render_partial() for post in posts])
     index_definitions = {"number_of_pages": str(parameters["number_of_pages"]), "rendered_posts": rendered_posts}
     index_definitions["login_status_message"] = login_status_message(parameters)
     return TemplateEngine(template, index_definitions).render()
