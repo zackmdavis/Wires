@@ -1,4 +1,3 @@
-// This should probably be an Underscore template!
 new_comment_form_html = '<p><em>Leave a comment</em></p><form id="new_comment_form">' + '\n' +
 '  <p><strong>Name:</strong> <input type="text" id="comment_author" placeholder="your name"></p>' + '\n' +
 '  <p><strong>Email:</strong> <input type="text" id="comment_email" placeholder="your email"></p>' + '\n' +
@@ -27,10 +26,9 @@ $(document).ready(function() {
 		    post_id: $('#post_title').data("id")
 		},
 		success: function(response) {
-		    // TODO: render the new comment and insert into
-		    // the DOM
-		    $('#comment_form_holder').fadeOut(400);
 		    console.log(response);
+		    $('#comment_form_holder').remove();
+		    $('#comments').append($(response.html).hide().fadeIn(400));
 		}
 	    });
 	});
