@@ -10,7 +10,7 @@ def index(parameters):
     template = open('./templates/posts/index.html').read()
     posts = Post.all(Post.cxn, "posts")
     post_template = open('./templates/posts/show.html').read()
-    rendered_posts = "<br><br>".join([TemplateEngine(post_template, definitions(post, {"id": post.id, "comments_link": '<p><a href="/posts/{0}#comments">{1} comments</p>'.format(post.id, len(post.comments(globals())))})).render_partial() for post in posts])
+    rendered_posts = "<br><br>".join([TemplateEngine(post_template, definitions(post, {"id": post.id, "comments_link": '<p><a href="/posts/{0}#comments">{1} comments</a></p>'.format(post.id, len(post.comments(globals())))})).render_partial() for post in posts])
     index_definitions = {"number_of_pages": str(parameters["number_of_pages"]), "rendered_posts": rendered_posts}
     index_definitions["login_status_message"] = login_status_message(parameters)
     return TemplateEngine(template, index_definitions).render()
@@ -24,7 +24,7 @@ def show(parameters):
     if comments:
         rendered_comments = "<h3>Comments</h3>" + "".join([TemplateEngine(comment_template, comment.attributes).render_partial() for comment in comments])
     else:
-        rendered_comments = "<p>No comments yet.</p>"
+        rendered_comments = '<p id="no_comments">No comments yet.</p>'
     new_comment_link_html = '<a id="new_comment_link" href="#">Make a new comment!</a>'
     parameters.update({"rendered_comments": rendered_comments, "new_comment_link": new_comment_link_html, "show_post_script_tag": show_post_script_tag})
     return TemplateEngine(template, definitions(post, parameters)).render()

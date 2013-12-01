@@ -26,7 +26,7 @@ $(document).ready(function() {
 		    post_id: $('#post_title').data("id")
 		},
 		success: function(response) {
-		    console.log(response);
+		    $('#no_comments').remove();
 		    $('#comment_form_holder').remove();
 		    $('#comments').append($(response.html).hide().fadeIn(400));
 		}
