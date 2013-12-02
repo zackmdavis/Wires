@@ -14,7 +14,10 @@ def create(parameters):
         template = open('./templates/comments/show.html').read()
         attributes_to_render.update({"html": TemplateEngine(template, attributes_to_render).render_partial()})
         return json.dumps(attributes_to_render)
+    # Even though these are intended as errors, they're still being
+    # sent back as an HTTP 200 OK. It's important to fix this so that
+    # the jQuery can use a separate error callback.
+    except ValidationError as ve:
+        return json.dumps(ve.messages)
     except:
-        # Even though this is intended as an error, it's still being
-        # sent back as an HTTP 200 OK. Solutions ... ?
         return '["An error occurred!"]'

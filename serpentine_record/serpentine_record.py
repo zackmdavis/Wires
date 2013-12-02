@@ -14,6 +14,7 @@ class SqlObject(MassObject):
         self.db_connection = db_connection
         self.db_connection.row_factory = sqlite3.Row
         self.cursor = db_connection.cursor()
+        self.validations = []
 
     @property
     def attributes(self):
@@ -22,6 +23,7 @@ class SqlObject(MassObject):
         del attr_dict['db_connection']
         del attr_dict['cursor']
         del attr_dict['id']
+        del attr_dict['validations']
         attr_dict = {key: attr_dict[key] for key in attr_dict if type(attr_dict[key]).__name__ != "function"}
         return attr_dict
 
@@ -93,6 +95,7 @@ class SqlObject(MassObject):
         self.db_connection.commit()
 
     def save(self):
+        self.validate()
         if self.id is None:
             self.create()
         else:
@@ -107,3 +110,12 @@ class SqlObject(MassObject):
         foreign_key = foreign_key or class_name.lower()+"_id"
         search = lambda context: eval(class_name, context).find_where(eval(class_name, context).cxn, eval(class_name, context).table_name, {primary_key: self.__dict__[foreign_key]})
         setattr(self, association, search)
+
+    def validate(self):
+        errors = [message for message in (validation() for validation in self.validations) if message is not None]
+        if errors:
+            raise ValidationError(errors)
+
+class ValidationError(Exception):
+    def __init__(self, messages):
+        self.messages = messages

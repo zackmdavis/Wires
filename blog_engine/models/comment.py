@@ -18,3 +18,8 @@ class Comment(SqlObject):
                       if attribute in ("author", "email", "website", "body", "post_id")}
         super().__init__(self.cxn, "comments", attributes, id)
         self.belongs_to("post", "Post", "post_id")
+        self.validations.append(self.validate_email)
+
+    def validate_email(self):
+        if "@" not in self.email:
+            return "invalid email address"
