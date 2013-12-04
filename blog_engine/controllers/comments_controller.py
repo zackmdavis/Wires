@@ -19,5 +19,6 @@ def create(parameters):
     # the jQuery can use a separate error callback.
     except ValidationError as ve:
         return json.dumps(ve.messages)
-    except:
+    except Exception as e:
+        print(str(e))
         return '["An error occurred!"]'

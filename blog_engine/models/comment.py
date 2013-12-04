@@ -19,6 +19,20 @@ class Comment(SqlObject):
         super().__init__(self.cxn, "comments", attributes, id)
         self.belongs_to("post", "Post", "post_id")
         self.validations.append(self.validate_email)
+        self.validate_presence_of("author")
+        self.validate_presence_of("email")
+        self.validate_presence_of("body")
+
+    def validate_presence_of(self, attribute_name):
+        def validate_attribute():
+            try:
+                attribute = getattr(self, attribute_name)
+                if attribute:
+                    return None
+            except AttributeError:
+                pass
+            return "{0} can't be blank".format(attribute_name)
+        self.validations.append(validate_attribute)
 
     def validate_email(self):
         if "@" not in self.email:
