@@ -33,4 +33,4 @@ RequestHandler.post[re.compile("^/login$")] = sessions_controller.login
 RequestHandler.get[re.compile("^/logout$")] = sessions_controller.logout
 
 if __name__ == '__main__':
-    run_server('localhost', 8080, RequestHandler)
+    run_server('', 8080, RequestHandler)
