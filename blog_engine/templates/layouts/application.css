@@ -1,3 +1,8 @@
 body {
-  background-color: #F0F0F0;
+    background-color: #F0F0F0;
+}
+
+.error {
+    font-weight: bold;
+    background-color: #FF99A0;
 }

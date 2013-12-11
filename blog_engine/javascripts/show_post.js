@@ -4,7 +4,7 @@ new_comment_form_html = '<p><em>Leave a comment</em></p><form id="new_comment_fo
 '  <p><strong>Your comment</strong></p>' + '\n' +
 '  <textarea rows="8" cols="50" id="comment_body" placeholder="your comment"></textarea>' + '\n' +
 '  <p><input type="submit" id="submit_comment" value="Submit comment!"></p>' + '\n' +
-'</form>'
+'</form>';
 
 $(document).ready(function() {
     $('#new_comment_link').on("click", function(event) {
@@ -30,6 +30,13 @@ $(document).ready(function() {
 		    $('#no_comments').remove();
 		    $('#comment_form_holder').remove();
 		    $('#comments').append($(response.html).hide().fadeIn(400));
+		},
+		error: function(response) {
+		    console.log(response);
+		    $('.error').remove();
+		    $('#new_comment_form :input').prop("disabled", false);
+		    var error_flash_html = '<div class="error">Your comment could not be submitted because errors&mdash;<br />' + response.responseJSON.errors.join('<br />') + '</div>';
+		    $('#comment_form_holder').prepend(error_flash_html);
 		}
 	    });
 	});

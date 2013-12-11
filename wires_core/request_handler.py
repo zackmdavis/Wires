@@ -51,6 +51,12 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         page = "<html><head></head><body><h2>{0}</h2></body></html>".format(message)
         self.wfile.write(bytes(page, 'UTF-8'))
 
+    def return_error_json(self, code, json):
+        self.send_response(code)
+        self.send_header("Content-type", "application/json")
+        self.end_headers()
+        self.wfile.write(bytes(json, 'UTF-8'))
+
     def return_success(self, page, cookie_parameters):
         self.send_response(200)
         if "<html" in page:
@@ -131,6 +137,11 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
                     self.return_success(page, cookie_parameters)
             else:
                 page = action(parameters)
-                self.return_success(page, cookie_parameters)
+                if '"status": 422' in page:
+                    self.return_error_json(422, page)
+                elif '"status": 500' in page:
+                    self.return_error_json(500, page)
+                else:
+                    self.return_success(page, cookie_parameters)
         else:
             self.return_error(500, "Internal Server Error")
