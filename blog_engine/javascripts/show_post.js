@@ -14,8 +14,8 @@ $(document).ready(function() {
 	$('#comments').append(form.hide().fadeIn(400));
 	$('#submit_comment').on("click", function(event) {
 	    event.preventDefault();
-	    $('#submit_comment').prop("value", "Submitting ...")
-	    $('#new_comment_form :input').prop("disabled", true)
+	    $('#submit_comment').prop("value", "Submitting ...");
+	    $('#new_comment_form :input').prop("disabled", true);
 	    $.ajax({
 		url: "/comments",
 		type: "POST",
@@ -35,6 +35,7 @@ $(document).ready(function() {
 		    console.log(response);
 		    $('.error').remove();
 		    $('#new_comment_form :input').prop("disabled", false);
+		    $('#submit_comment').prop("value", "Submit comment!");
 		    var error_flash_html = '<div class="error">Your comment could not be submitted because errors&mdash;<br />' + response.responseJSON.errors.join('<br />') + '</div>';
 		    $('#comment_form_holder').prepend(error_flash_html);
 		}
