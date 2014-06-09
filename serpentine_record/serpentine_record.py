@@ -66,11 +66,7 @@ class SqlObject(MassObject):
         if n == 1:
             return "?"
         else:
-            marks_string = "("
-            for _ in range(n-1):
-                marks_string += "?, "
-            marks_string += "?)"
-            return marks_string
+            return "({})".format(", ".join(["?"]*n))
 
     @staticmethod
     def dict_from_row(row):

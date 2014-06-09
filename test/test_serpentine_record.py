@@ -7,6 +7,13 @@ path.append('../serpentine_record')
 
 from serpentine_record import SqlObject
 
+class TestStaticMethods(unittest.TestCase):
+
+    def test_query_parameterization(self):
+        self.assertEqual("?", SqlObject.question_marks(1))
+        self.assertEqual("(?, ?, ?)", SqlObject.question_marks(3))
+
+
 class TestSqlObject(unittest.TestCase):
 
     @classmethod
